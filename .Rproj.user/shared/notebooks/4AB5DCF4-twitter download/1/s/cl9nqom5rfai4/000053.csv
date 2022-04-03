@@ -1,0 +1,30 @@
+"0","data <- read_csv(here(""data_files"", ""tweets_27March22.csv""))"
+"2","
+[36m--[39m [1m[1mColumn specification[1m[22m [36m-------------------------------------------------------------------[39m
+cols(
+  user_id = [31mcol_character()[39m,
+  text = [31mcol_character()[39m,
+  hashtags = [31mcol_character()[39m,
+  location = [31mcol_character()[39m,
+  followers_count = [32mcol_double()[39m
+)
+
+"
+"0","# What are the frequent hashtags"
+"0","hashtags <- data %>%"
+"0","  separate_rows(hashtags, sep = "" "") %>%"
+"0","  mutate(hashtags = str_to_lower(hashtags)) %>%"
+"0","  count(hashtags) %>%"
+"0","  arrange(desc(n))"
+"0",""
+"0",""
+"0","  # Get the top 10 most frequent hashtags and visualize"
+"0","hashtags %>%"
+"0","  top_n(15, n) %>%"
+"0","  ggplot(aes(x=n, y=reorder(hashtags, n))) +"
+"0","  geom_col() +"
+"0","  geom_text(aes(label=n), hjust=-0.2) +"
+"0","  labs(title = ""Counts of hastags in tweets"","
+"0","       x = ""Counts"","
+"0","       y = NULL) + "
+"0","  theme_classic()"

@@ -1,0 +1,104 @@
+---
+title: "Twitter analysis (clustering)"
+author: "Andrew"
+date: "3/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rtweet)
+library(tidyverse)
+library(here)
+# text mining library
+library(tidytext)
+library(flextable)
+```
+
+# Setup authentication for rtweet
+```{r}
+# Add in authentication (key, secret, access token and access secret)
+key <- "add key"
+secret <- "add secret"
+access_token <- "add access token"
+access_secret <- "add access secret"
+```
+
+# Get twitter data
+```{r}
+# create token named "twitter_token" using the access tokens above
+twitter_token <- create_token(
+  consumer_key = key,
+  consumer_secret = secret,
+  access_token = access_token,
+  access_secret = access_secret)
+
+# Use search string q to get 2000 tweets. Not that I can only get tweets from the last 7 days using this method, so you might get < 2000 data returned if there aren't enough tweets
+tweets <- search_tweets(q = "Thailand travel",
+                               n = 5000)
+
+# Lets limit to only english tweets that are not retweets
+filtered_tweets <- tweets %>%
+                   filter(lang == "en" & is_retweet != "TRUE") %>%
+                   select(c("user_id",
+                            "text",
+                            "hashtags",
+                            "location",
+                            "followers_count",
+                            ))
+
+# Write filtered tweets to csv file so we dont need to download data in the future
+write_as_csv(filtered_tweets, here("data_files", "tweets_27March22.csv"))
+                    
+```
+
+# Very basic EDA - hashtags, locations and user
+```{r}
+data <- read_csv(here("data_files", "tweets_27March22.csv"))
+
+# What are the frequent hashtags
+hashtags <- data %>%
+  separate_rows(hashtags, sep = " ") %>%
+  mutate(hashtags = str_to_lower(hashtags)) %>%
+  count(hashtags) %>%
+  arrange(desc(n))
+
+
+  # Get the top 10 most frequent hashtags and visualize
+hashtags %>%
+  top_n(15, n) %>%
+  ggplot(aes(x=n, y=reorder(hashtags, n))) +
+  geom_col() +
+  geom_text(aes(label=n), hjust=-0.2) +
+  labs(title = "Counts of hastags in tweets",
+       x = "Counts",
+       y = NULL) + 
+  theme_classic()
+
+# Apart from the obvious thailand, we get locations such as 'phuket', 'bangkok' and 'pattaya' as well as activities such as 'travelling','travelphotography' and 'nature'
+  
+# Lets look at the geolocations of the tweets
+data %>% 
+  count(location) %>%
+  top_n(15, n) %>%
+  ggplot(aes(x=n, y=reorder(location, n))) +
+  geom_col() + 
+  geom_text(aes(label=n), hjust = -0.1) +
+  labs(title = "Counts of location in tweets",
+       x = "Counts",
+       y = NULL) + 
+  theme_minimal()
+# Germany looks quite interesting!
+
+# Finally, lets look at users with the most followers (i.e. possibly influential twitter users)
+# Lets look at the list as a table
+data %>%
+  arrange(desc(followers_count)) %>%
+  top_n(20, followers_count) %>%
+  select(user_id, followers_count) %>%
+  flextable()
+  
+  
+
+```
+

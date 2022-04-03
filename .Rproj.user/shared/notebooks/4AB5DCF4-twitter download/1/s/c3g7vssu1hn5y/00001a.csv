@@ -1,0 +1,6 @@
+"0","filtered_tweets <- tweets %>%
+                   filter(lang == ""en"" & is_retweet != ""TRUE"") %>%
+  flatten(hashtags)
+"
+"2","Error in flatten(., hashtags) : unused argument (hashtags)
+"

@@ -1,0 +1,20 @@
+"0","knitr::opts_chunk$set(echo = TRUE)"
+"0","library(rtweet)"
+"0","library(tidyverse)"
+"0","library(here)"
+"0","# text mining library"
+"0","library(tidytext)"
+"0","library(flextable)"
+"2","Registered S3 method overwritten by 'data.table':
+  method           from
+  print.data.table     
+"
+"2","
+Attaching package: ‘flextable’
+
+"
+"2","The following object is masked from ‘package:purrr’:
+
+    compose
+
+"
